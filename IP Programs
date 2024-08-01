@@ -1,0 +1,167 @@
+7.
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+img = cv2.imread("rnsit.jpg")
+height, width = img.shape[:2]
+quad1 = img[:height//2, :width//2]
+quad2 = img[:height//2, width//2:]
+quad3 = img[height//2:, :width//2]
+quad4 = img[height//2:, width//2:]
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1)
+plt.imshow(cv2.cvtColor(quad1, cv2.COLOR_BGR2RGB))
+plt.title("1")
+plt.axis("off")
+plt.subplot(1, 2, 2)
+plt.imshow(cv2.cvtColor(quad2, cv2.COLOR_BGR2RGB))
+plt.title("2")
+plt.axis("off")
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1)
+plt.imshow(cv2.cvtColor(quad3, cv2.COLOR_BGR2RGB))
+plt.title("3")
+plt.axis("off")
+plt.subplot(1, 2, 2)
+plt.imshow(cv2.cvtColor(quad4, cv2.COLOR_BGR2RGB))
+plt.title("4")
+plt.axis("off")
+plt.show()
+
+8.
+ import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+def translate_image(image, dx, dy):
+ rows, cols = image.shape[:2]
+ translation_matrix = np.float32([[1, 0, dx], [0, 1, dy]])
+ translated_image = cv2.warpAffine(image, translation_matrix, (cols, rows))
+ return translated_image
+
+image = cv2.imread("rnsit.jpg")
+
+image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+height, width = image.shape[:2]
+
+center = (width // 2, height // 2)
+
+rotation_value = int(input("Enter the degree of Rotation (between -180 and 180): "))
+while rotation_value < -180 or rotation_value > 180:
+ rotation_value = int(input("Invalid input. Enter the degree of Rotation (between -180 and 180): "))
+scaling_value = float(input("Enter the zooming factor (between 0.1 and 10): "))
+while scaling_value < 0.1 or scaling_value > 10:
+ scaling_value = float(input("Invalid input. Enter the zooming factor (between 0.1 and 10): "))
+
+rotated = cv2.getRotationMatrix2D(center=center, angle=rotation_value, scale=1)
+rotated_image = cv2.warpAffine(src=image, M=rotated, dsize=(width, height))
+
+scaled = cv2.getRotationMatrix2D(center=center, angle=0, scale=scaling_value)
+scaled_image = cv2.warpAffine(src=rotated_image, M=scaled, dsize=(width, height))
+
+h = int(input("How many pixels you want the image to be translated horizontally? "))
+v = int(input("How many pixels you want the image to be translated vertically? "))
+
+translated_image = translate_image(scaled_image, dx=h, dy=v)
+
+translated_image_rgb = cv2.cvtColor(translated_image, cv2.COLOR_BGR2RGB)
+
+cv2.imwrite('Final_image.png', translated_image)
+
+plt.figure(figsize=(10, 5))
+
+plt.subplot(1, 2, 1)
+plt.imshow(image_rgb)
+plt.title("Original Image")
+plt.axis("off")
+
+plt.subplot(1, 2, 2)
+plt.imshow(translated_image_rgb)
+plt.title("Final Transformed Image")
+plt.axis("off")
+plt.show()
+
+9.
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+image_path="logo.jpeg"
+img=cv2.imread(image_path)
+gray= cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+edges = cv2.Canny(gray, 100, 200)
+kernel = np.ones((5, 5), np.float32) / 25
+texture = cv2.filter2D(gray, -1, kernel)
+plt.figure(figsize=(10, 5))
+
+plt.subplot(1,3,1)
+plt.title("Original Image")
+plt.imshow(cv2.cvtColor(img,cv2.COLOR_BGR2RGB))
+plt.axis("off")
+
+plt.subplot(1, 3, 2)
+plt.title("Edges")
+plt.imshow(edges, cmap='gray')
+plt.axis('off')
+
+plt.subplot(1, 3, 3)
+plt.title("Texture")
+plt.imshow(texture, cmap='gray')
+plt.axis('off')
+
+plt.show()
+
+10.
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+img = cv2.imread("rnsit.jpg", cv2.IMREAD_GRAYSCALE)
+gaussian_blur = cv2.GaussianBlur(img, (5, 5), 0)
+bilateral_blur = cv2.bilateralFilter(img, 9, 75, 75)
+plt.figure(figsize=(25, 10))
+plt.subplot(1, 3, 1)
+plt.imshow(img, cmap='gray')
+plt.title("Original Grayscale Image")
+plt.axis("off")
+plt.subplot(1, 3, 2)
+plt.imshow(gaussian_blur, cmap='gray')
+plt.title("Blurred Image (Gaussian Blur)")
+plt.axis("off")
+plt.subplot(1, 3, 3)
+plt.imshow(bilateral_blur, cmap='gray')
+plt.title("Smoothened Image (Bilateral Filter)")
+plt.axis("off")
+plt.show()
+
+11.
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+image = cv2.imread('logo.jpeg')
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+thresh = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+cv2.THRESH_BINARY_INV, 15, 4)
+contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+cv2.drawContours(image, contours, -1, (0, 255, 0), 2)
+image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+plt.imshow(image_rgb)
+plt.title('Contours')
+plt.axis('off')
+plt.show()
+
+12.
+import cv2
+import matplotlib.pyplot as plt
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
+image_path = 'face.jpg'
+image = cv2.imread(image_path)
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+faces = face_cascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5)
+for (x, y, w, h) in faces:
+ cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
+image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+plt.imshow(image_rgb)
+plt.title('Detected Faces')
+plt.axis('off')
+plt.show()
